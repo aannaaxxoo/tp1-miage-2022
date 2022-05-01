@@ -5,9 +5,9 @@ NOTE: TP de deux slots de 1h20
 ## Nom du(des) étudiant(e)(s) de ce monôme/binôme 
 WARNING: NE PAS OUBLIER DE MENTIONNER LES DEUX NOMS SI VOUS ETES EN BINOME!
 
-#XXX# (et #YYY#)
+Yoann Le Ny et Oxana Bernard-Leroux
 
-Commentaires éventuels des étudiants : #XXXXXX#
+Commentaires éventuels des étudiants :
 
 ## Pré-requis 
 
@@ -38,22 +38,26 @@ TIP: [Rappel Git] Trois dépôts sont ici utilisés: le dépot Github de l'ensei
 * Observer le code du projet `todolist-debut-ex1`
 
 *Le code est-il structuré en couches ? Quel problèmes ce code peut-il poser ?*
+Ce code n'est pas structuré en couche car il y a un seul package global (et non pas 4 packages différents pour les 4 couches les plus communues : présentation, service, domaine et infrastructure).
+Cela créé un problème de dépendance (couplage fort) entre tous les fichiers.
 
 *Où se trouve le code métier (voir la règle de gestion RG 1) ?*
+Le code métier se trouve dans le fichier TodoListController.java, il faudrait le mettre dans la couche domain.
 
 *Cette règle est-elle facilement testable par un test unitaire ?*
+Cette règle n'est pas facilement testable car il n'y a pas d'injection de dépendance dans le TodoListController.
 
 * Lancer une base PostgreSQL en Docker dans un terminal (on lance ici la base en mode interactif pour visualiser son activité. Pour la lancer en tâche de fond, remplacer les options `it` par `d` comme 'daemon'):
 ```bash
 docker run -it -e POSTGRES_PASSWORD=password -p 5432:5432 postgres
 ```
 *Expliquer cette ligne de commande (y compris les options utilisées)*
-lance une base postgre sur Docker en arrière plan (-d) mais on peut aussi lancer en mode interractif avec '-it' et créé une variable d'environnement (-e) qui contient le password. -p rend le port 5432 accèssible en le rendant public.
+lance une base postgre sur Docker en arrière plan (-d) mais on peut aussi lancer en mode interractif avec '-it' et créé une variable d'environnement (-e) qui contient le password (la variable POSTGRES_PASSWORD contient "password"). -p rend le port 5432 accèssible en le rendant public.
 
 * Compléter le code manquant dans la méthode `TodoListController.createTodoItem()`
 
 *Pourquoi `todoItemRepository` est-il `null` ? Quelle est la meilleure façon de l'injecter ?*
-todoItemRepository est null car le constructeur ne savait pas qu'il devait en créer un. Nous l'avons injecté avec @Inject.
+todoItemRepository est null car le constructeur ne savait pas qu'il devait en créer un. Nous l'avons injecté avec @Inject (injection de dépendance).
 
 * Modifier le code en conséquence.
 
@@ -95,7 +99,10 @@ Source : http://leanpub.com/get-your-hands-dirty-on-clean-architecture[Tom Hombe
   - la couche `domain` qui contient les entités (au sens DDD, pas au sens JPA). En général des classes complexes (méthodes riches, relations entre les entités)
 
 *Rappeler en quelques lignes les grands principes de l'architecture hexagonale.*
-
+L'architecture hexagonale repose sur 3 principes :
+1) la séparation de l'user-side, de la business logic et du server-side
+2) les dépendance vont vers la business logic 
+3) les frontières sont isolées par des ports et adaptateurs.
 
 
 Compléter ce code avec une fonctionnalité de création de `TodoItem`  persisté en base et appelé depuis un endpoint REST `POST /todos` qui :
@@ -113,8 +120,11 @@ _Temps estimé : 20 mins_
 * Implémenter (en junit) des TU sur la règle de gestion qui consiste à afficher `[LATE!]` dans la description d'un item en retard de plus de 24h.
 
 *Quels types de tests devra-t-on écrire pour les adapteurs ?* 
+On devra écrire des tests unitaires et réaliser également des tests d'intégration.
 
 *Que teste-on dans ce cas ?*
+On doit tester l'ensemble des fonctions des classes de persistance : l'ajout d'un nouveau TodoItem ou d'un TodoItem existant mais aussi la récupération d'un TodoItem.
+Dans le controller, on teste l'ajout et la récuperation d'un TodoItem ainsi que de son statut.
 
 *S'il vous reste du temps, écrire quelques uns de ces types de test.*
 
